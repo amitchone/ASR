@@ -24,14 +24,18 @@ class FeatureExtract(object):
             self.frames[int(self.pos)] = self.data[int(self.pos):int(self.pos+self.length)]
             self.pos = self.pos+self.overlap
 
-    def window(self, frame, type='hamming'):
+    def window(self, pos, func='hamming'):
         self.windows = {'blackman': numpy.blackman, 'hanning': numpy.hanning,
                         'hamming':  numpy.hamming,  'bartlett': numpy.bartlett
                        }
+        self.window = self.windows[func](self.length)
 
-        self.window['hamming'](self.length)
-        
+        for idx, coeff in enumerate(self.window):
+            self.frames[int(pos)][idx] = self.frames[int(pos)][idx] * coeff
+
+
+
 
 f = FeatureExtract('today.wav')
 f.frame()
-f.window()
+f.window(0)
