@@ -1,16 +1,17 @@
 from __future__ import division
-import math
+from math import log10
+from scipy.signal import triang
 
 
 def hertz_to_mel(v):
-    return 2595 * math.log10(1+(v/700))
+    return 2595 * log10(1+(v/700))
 
 
 def mel_to_hertz(v):
     return 700 * (10 ** (v/2595) - 1)
 
 
-def get_mel_coeffs(low=80, high=8000, nfilts=26):
+def get_mel_coeffs(low, high, nfilts):
     low = hertz_to_mel(low)
     high = hertz_to_mel(high)
     spacing = (high-low) / (nfilts +1)
@@ -22,22 +23,53 @@ def get_mel_coeffs(low=80, high=8000, nfilts=26):
     return coeffs
 
 
-def mel_coeff_to_hertz(l):
+def mel_coeffs_to_hertz(l):
     return map(mel_to_hertz, l)
 
 
-def get_filter_params(l, nfilts=26):
+def get_fft_resolution(fs, npoints):
+    return (fs) / (npoints)
+
+
+def hertz_to_bin(h, fs, npoints):
+    return round(h / get_fft_resolution(fs, npoints))
+
+
+def calc_filterbank_params(fs, nfftpoints, low, high, nfilts):
+    mc = get_mel_coeffs(low, high, nfilts)
+    hc = mel_coeffs_to_hertz(mc)
+
     filter_params = dict()
 
     for i in range(nfilts):
-        filter_params[i] = { 'low': l[i], 'peak': l[i+1], 'high': l[i+2] }
+        filter_params[i] = { 'low': hc[i], 'peak': hc[i+1], 'high': hc[i+2],
+                             'lbin': hertz_to_bin(hc[i], fs, nfftpoints),
+                             'pbin': hertz_to_bin(hc[i+1], fs, nfftpoints),
+                             'hbin': hertz_to_bin(hc[i+2], fs, nfftpoints)
+                           }
 
     return filter_params
 
 
-mel_coeffs = get_mel_coeffs(80, 8000, 26)
-hz_coeffs = mel_coeff_to_hertz(mel_coeffs)
-filter_params = get_filter_params(hz_coeffs)
+def get_filterbank(fs, nfftpoints, low, high, nfilts=26):
+    filter_params = calc_filterbank_params(fs, nfftpoints, low, high, nfilts=26)
+    filter_coeffs = dict()
 
-for key, val in filter_params.iteritems():
-    print key, val['low'], val['peak'], val['high']
+    for key, val in filter_params.iteritems():
+        ncoeffs = (val['hbin'] - val['lbin']) + 1
+        coeffs = triang(ncoeffs)
+
+        filter_coeffs[key] = { 'lbin': val['lbin'], 'hbin': val['hbin'], 'coeffs': coeffs }
+
+    return filter_params, filter_coeffs
+
+
+
+
+
+
+if __name__ == '__main__':
+    p, c = get_filterbank(16000, 512, 80, 8000, 26)
+
+    print p[0]
+    print c[0]
