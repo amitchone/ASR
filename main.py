@@ -62,3 +62,19 @@ class FeatureExtract(object):
 
         for idx, factor in enumerate(self.windows[func](self.length)):
             self.frames[int(pos)][idx] = self.frames[int(pos)][idx] * factor
+
+    def fft(self, pos):
+        '''
+        for samp in self.frames[int(pos)]:
+            print samp
+
+        print max(self.frames[int(pos)])
+        '''
+        fourier = numpy.fft.fft(self.frames[int(pos)])
+        plt.plot(fourier)
+        plt.show()
+
+f = FeatureExtract('1k.wav')
+f.frame()
+#f.window(1000)
+f.fft(551)
