@@ -27,12 +27,12 @@ def mel_coeffs_to_hertz(l):
     return map(mel_to_hertz, l)
 
 
-def get_fft_resolution(fs, npoints):
-    return (fs) / (npoints)
+def get_fft_resolution(fs, nfftpoints):
+    return (fs) / (nfftpoints)
 
 
-def hertz_to_bin(h, fs, npoints):
-    return round(h / get_fft_resolution(fs, npoints))
+def hertz_to_bin(h, fs, nfftpoints):
+    return round(h / get_fft_resolution(fs, nfftpoints))
 
 
 def calc_filterbank_params(fs, nfftpoints, low, high, nfilts):
@@ -52,7 +52,7 @@ def calc_filterbank_params(fs, nfftpoints, low, high, nfilts):
 
 
 def get_filterbank(fs, nfftpoints, low, high, nfilts=26):
-    filter_params = calc_filterbank_params(fs, nfftpoints, low, high, nfilts=26)
+    filter_params = calc_filterbank_params(fs, nfftpoints, low, high, nfilts)
     filter_coeffs = dict()
 
     for key, val in filter_params.iteritems():
@@ -62,10 +62,6 @@ def get_filterbank(fs, nfftpoints, low, high, nfilts=26):
         filter_coeffs[key] = { 'lbin': val['lbin'], 'hbin': val['hbin'], 'coeffs': coeffs }
 
     return filter_params, filter_coeffs
-
-
-
-
 
 
 if __name__ == '__main__':
