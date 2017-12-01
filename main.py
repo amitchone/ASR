@@ -1,3 +1,8 @@
+# main.py
+# MFCC feature extraction and comparison
+# Author: Adam Mitchell
+# Email:  adamstuartmitchell@gmail.com
+
 # Import futures
 from __future__ import division
 

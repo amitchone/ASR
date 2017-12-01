@@ -1,3 +1,8 @@
+# filterbank.py
+# Generate triangular filterbank with specified number of filters and cutoff frequencies
+# Author: Adam Mitchell
+# Email:  adamstuartmitchell@gmail.com
+
 from __future__ import division
 from math import log10
 from scipy.signal import triang

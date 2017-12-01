@@ -1,3 +1,8 @@
+# dft.py
+# Compute the discrete fourier transform of a given data set
+# Author: Adam Mitchell
+# Email:  adamstuartmitchell@gmail.com
+
 import math, numpy, time
 
 from matplotlib import pyplot as plt
