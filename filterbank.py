@@ -2,7 +2,6 @@
 # Generate triangular filterbank with specified number of filters and cutoff frequencies
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
-
 from __future__ import division
 from math import log10
 from scipy.signal import triang
@@ -28,10 +27,6 @@ def get_mel_coeffs(low, high, nfilts):
     return coeffs
 
 
-def mel_coeffs_to_hertz(l):
-    return map(mel_to_hertz, l)
-
-
 def get_fft_resolution(fs, nfftpoints):
     return (fs) / (nfftpoints)
 
@@ -42,7 +37,7 @@ def hertz_to_bin(h, fs, nfftpoints):
 
 def calc_filterbank_params(fs, nfftpoints, low, high, nfilts):
     mc = get_mel_coeffs(low, high, nfilts)
-    hc = mel_coeffs_to_hertz(mc)
+    hc = map(mel_to_hertz, mc)
 
     filter_params = dict()
 
