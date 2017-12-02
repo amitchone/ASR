@@ -6,8 +6,9 @@
 import filterbank as fb
 import dft
 
-import numpy
+import math
 
+import numpy
 from scipy.io.wavfile import read
 from matplotlib import pyplot as plt
 
@@ -76,7 +77,11 @@ class FeatureVectorExtract(object):
                 for idx, c in enumerate(val['coeffs']):
                     fvals.append(c * p[lbin+idx])
 
-                filtered[key] = fvals
+                logs = map(lambda x: math.log10(x), fvals)
+                filtered[key] = sum(logs)
+                print key, filtered[key]
+
+
 
             break
 
@@ -85,7 +90,7 @@ class FeatureVectorExtract(object):
 
 
 if __name__ == '__main__':
-    f = FeatureVectorExtract('1k.wav', 1024, 80, 8000, 0.025, 0.010)
+    f = FeatureVectorExtract('20ketc.wav', 1024, 80, 8000, 0.025, 0.010)
 
 
 
