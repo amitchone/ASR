@@ -2,6 +2,7 @@
 # Generate triangular filterbank with specified number of filters and cutoff frequencies
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
+
 from __future__ import division
 from math import log10
 from scipy.signal import triang
@@ -62,10 +63,3 @@ def get_filterbank(fs, nfftpoints, low, high, nfilts=26):
         filter_coeffs[key] = { 'lbin': val['lbin'], 'hbin': val['hbin'], 'coeffs': coeffs }
 
     return filter_params, filter_coeffs
-
-
-if __name__ == '__main__':
-    p, c = get_filterbank(16000, 512, 80, 8000, 26)
-
-    print p[0]
-    print c[0]
