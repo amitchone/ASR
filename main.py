@@ -6,6 +6,8 @@
 import filterbank as fb
 import dft
 
+import numpy
+
 from scipy.io.wavfile import read
 from matplotlib import pyplot as plt
 
@@ -27,20 +29,65 @@ language model
 feature vector database
 '''
 
+class FeatureVectorExtract(object):
+    def __init__(self, wavfile, nfftpoints, fblf, fbhf, frlen, frovrlp, fbnfilts=26, winfunc='hamming', mfcc=True):
+        fs, data = read(wavfile)
+
+        if mfcc:
+            framed_signal = self.get_frames(frlen, frovrlp, fs, data)
+            for key, val in framed_signal.iteritems():
+                print key, val
+                
+            #self.get_mfcc(fs, framed_signal, nfftpoints, fblf, fbhf, fbnfilts, winfunc)
+
+
+    def get_frames(self, frlen, frovrlp, fs, data):
+        length = int(round(frlen * fs))
+        ovrlap = int(round(frovrlp * fs))
+        pointr = 0
+        countr = 0
+        frames = dict()
+
+        while pointr < len(data):
+            frames[countr] = data[pointr:pointr+length]
+
+            if len(frames[countr]) != length:
+                frames[countr] = numpy.append(frames[countr], [0] * (length-len(frames[countr])))
+
+            countr += 1
+            pointr += ovrlap
+
+        return frames
+
+
+    def get_mfcc(self, fs, data, nfftpoints, fblf, fbhf, fbnfilts, winfunc):
+        p, c = fb.get_filterbank(fs, nfftpoints, fblf, fbhf, fbnfilts)
+
+
 
 if __name__ == '__main__':
-    p, c = fb.get_filterbank(22050, 512, 80, 8000, 26)
-    fs, data = read('1k.wav')
+    f = FeatureVectorExtract('1k.wav', 1024, 80, 8000, 0.025, 0.010)
+
+
+
+    '''
     f = data[0:400]
-    m = dft.fft(f)
+    m = dft.fft(f, npoints=1024)
+
+    filtered = dict()
 
     for key, val in c.iteritems():
+        fvals = list()
         fnum = key
         lbin = int(val['lbin'])
-        hbin = int(val['hbin'])
 
         for idx, c in enumerate(val['coeffs']):
-            print 'Filter: {0:2}  Bin: {1:2}  Coeff: {2:8}  Mag: {3:8}'.format(fnum, lbin+idx, c, m[lbin+idx])
+            fvals.append(c * m[lbin+idx])
 
+        filtered[key] = fvals
+
+    for key, val in filtered.iteritems():
+        print key, val
     #plt.plot(m)
     #plt.show()
+    '''
