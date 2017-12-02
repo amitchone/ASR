@@ -19,6 +19,9 @@ npoints for fft
 filterbank lf and hf end points
 filterbank nfilters
 window function
+frame length
+frame overlap
+feature extract method (mfcc, lpc, dtw, rasta)
 
 Must add:
 
@@ -35,10 +38,7 @@ class FeatureVectorExtract(object):
 
         if mfcc:
             framed_signal = self.get_frames(frlen, frovrlp, fs, data)
-            for key, val in framed_signal.iteritems():
-                print key, val
-                
-            #self.get_mfcc(fs, framed_signal, nfftpoints, fblf, fbhf, fbnfilts, winfunc)
+            self.get_mfcc(fs, framed_signal, nfftpoints, fblf, fbhf, fbnfilts, winfunc)
 
 
     def get_frames(self, frlen, frovrlp, fs, data):
@@ -61,7 +61,26 @@ class FeatureVectorExtract(object):
 
 
     def get_mfcc(self, fs, data, nfftpoints, fblf, fbhf, fbnfilts, winfunc):
-        p, c = fb.get_filterbank(fs, nfftpoints, fblf, fbhf, fbnfilts)
+        fp, c = fb.get_filterbank(fs, nfftpoints, fblf, fbhf, fbnfilts)
+
+        for frame, signal in data.iteritems():
+            p = dft.fft(signal, npoints=nfftpoints)
+
+            filtered = dict()
+
+            for key, val in c.iteritems():
+                fvals = list()
+                fnum = key
+                lbin = int(val['lbin'])
+
+                for idx, c in enumerate(val['coeffs']):
+                    fvals.append(c * p[lbin+idx])
+
+                filtered[key] = fvals
+
+            break
+
+
 
 
 
