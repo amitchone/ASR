@@ -6,7 +6,7 @@
 import filterbank as fb
 import dft
 
-import math
+import math, time
 
 import numpy
 from scipy.io.wavfile import read
@@ -74,24 +74,20 @@ class FeatureVectorExtract(object):
                 fnum = key
                 lbin = int(val['lbin'])
 
-                for idx, c in enumerate(val['coeffs']):
-                    fvals.append(c * p[lbin+idx])
+                for idx, coeff in enumerate(val['coeffs']):
+                    fvals.append(coeff * p[lbin+idx])
 
                 logs = map(lambda x: math.log10(x), fvals)
                 filtered[key] = sum(logs)
-                print key, filtered[key]
-
-
-
-            break
-
+                #print key, filtered[key]
 
 
 
 
 if __name__ == '__main__':
-    f = FeatureVectorExtract('20ketc.wav', 1024, 80, 8000, 0.025, 0.010)
-
+    start = time.time()
+    f = FeatureVectorExtract('20ketc.wav', 1024, 80, 8000, 0.025, 0.01)
+    print time.time() - start
 
 
     '''
