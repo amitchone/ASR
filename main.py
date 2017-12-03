@@ -9,29 +9,14 @@ import dft
 import math, time
 
 import numpy
-from scipy.io.wavfile import read
 from matplotlib import pyplot as plt
+from scipy.io.wavfile import read
+from scipy.fftpack import dct
 
-'''
-Current arguments required for class:
-
-wav file (will provide audio data and sampling frequency)
-npoints for fft
-filterbank lf and hf end points
-filterbank nfilters
-window function
-frame length
-frame overlap
-feature extract method (mfcc, lpc, dtw, rasta)
-
-Must add:
-
-padding function for frames - pad end with 0s to reach frame length
-feature extract class
-lexicon
-language model
-feature vector database
-'''
+# TODO:
+# lexicon
+# language model
+# feature vector database
 
 class FeatureVectorExtract(object):
     def __init__(self, wavfile, nfftpoints, fblf, fbhf, frlen, frovrlp, fbnfilts=26, winfunc='hamming', mfcc=True):
@@ -39,7 +24,7 @@ class FeatureVectorExtract(object):
 
         if mfcc:
             framed_signal = self.get_frames(frlen, frovrlp, fs, data)
-            self.get_mfcc(fs, framed_signal, nfftpoints, fblf, fbhf, fbnfilts, winfunc)
+            self.mfcc_vectors = self.get_mfcc(fs, framed_signal, nfftpoints, fblf, fbhf, fbnfilts, winfunc)
 
 
     def get_frames(self, frlen, frovrlp, fs, data):
@@ -63,11 +48,12 @@ class FeatureVectorExtract(object):
 
     def get_mfcc(self, fs, data, nfftpoints, fblf, fbhf, fbnfilts, winfunc):
         fp, c = fb.get_filterbank(fs, nfftpoints, fblf, fbhf, fbnfilts)
+        vectors = dict()
 
         for frame, signal in data.iteritems():
             p = dft.fft(signal, npoints=nfftpoints)
 
-            filtered = dict()
+            log_energies = dict()
 
             for key, val in c.iteritems():
                 fvals = list()
@@ -77,37 +63,17 @@ class FeatureVectorExtract(object):
                 for idx, coeff in enumerate(val['coeffs']):
                     fvals.append(coeff * p[lbin+idx])
 
-                logs = map(lambda x: math.log10(x), fvals)
-                filtered[key] = sum(logs)
-                #print key, filtered[key]
+                log_energies[key] = math.log10(sum(fvals))
 
+            vectors[frame] = dct([ i for i in log_energies.itervalues() ])[0:13]
 
+        return vectors
 
 
 if __name__ == '__main__':
     start = time.time()
-    f = FeatureVectorExtract('20ketc.wav', 1024, 80, 8000, 0.025, 0.01)
-    print time.time() - start
-
-
-    '''
-    f = data[0:400]
-    m = dft.fft(f, npoints=1024)
-
-    filtered = dict()
-
-    for key, val in c.iteritems():
-        fvals = list()
-        fnum = key
-        lbin = int(val['lbin'])
-
-        for idx, c in enumerate(val['coeffs']):
-            fvals.append(c * m[lbin+idx])
-
-        filtered[key] = fvals
-
-    for key, val in filtered.iteritems():
+    f = FeatureVectorExtract('06s.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfccs = f.mfcc_vectors
+    for key, val in mfccs.iteritems():
         print key, val
-    #plt.plot(m)
-    #plt.show()
-    '''
+    print time.time() - start
