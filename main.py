@@ -65,15 +65,63 @@ class FeatureVectorExtract(object):
 
                 log_energies[key] = math.log10(sum(fvals))
 
-            vectors[frame] = dct([ i for i in log_energies.itervalues() ])[0:13]
+            vectors[frame] = dct([ i for i in log_energies.itervalues() ])
 
         return vectors
 
 
 if __name__ == '__main__':
-    start = time.time()
-    f = FeatureVectorExtract('06s.wav', 1024, 80, 8000, 0.025, 0.01)
-    mfccs = f.mfcc_vectors
-    for key, val in mfccs.iteritems():
-        print key, val
-    print time.time() - start
+    f1 = FeatureVectorExtract('one-1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcc1 = f1.mfcc_vectors
+
+    f2 = FeatureVectorExtract('two-1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcc2 = f2.mfcc_vectors
+
+    f3 = FeatureVectorExtract('three-1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcc3 = f3.mfcc_vectors
+
+    f4 = FeatureVectorExtract('four-1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcc4 = f4.mfcc_vectors
+
+    f5 = FeatureVectorExtract('five-1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcc5 = f5.mfcc_vectors
+
+    f6 = FeatureVectorExtract('six-1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcc6 = f6.mfcc_vectors
+
+    ftest = FeatureVectorExtract('one-ben1.wav', 1024, 80, 8000, 0.025, 0.01)
+    mfcctest = ftest.mfcc_vectors
+
+    lens = [ len(mfcc1), len(mfcc2), len(mfcc3), len(mfcc4), len(mfcc5), len(mfcc6), len(mfcctest) ]
+
+    T1, T2, T3, T4, T5, T6 = 0, 0, 0, 0, 0, 0
+    F1, F2, F3, F4, F5, F6 = 0, 0, 0, 0, 0, 0
+    tolerance = 0.59
+
+    for i in range(min(lens)):
+        comparison1 = numpy.isclose(mfcctest[i], mfcc1[i], atol=tolerance, rtol=tolerance)
+        comparison2 = numpy.isclose(mfcctest[i], mfcc2[i], atol=tolerance, rtol=tolerance)
+        comparison3 = numpy.isclose(mfcctest[i], mfcc3[i], atol=tolerance, rtol=tolerance)
+        comparison4 = numpy.isclose(mfcctest[i], mfcc4[i], atol=tolerance, rtol=tolerance)
+        comparison5 = numpy.isclose(mfcctest[i], mfcc5[i], atol=tolerance, rtol=tolerance)
+        comparison6 = numpy.isclose(mfcctest[i], mfcc6[i], atol=tolerance, rtol=tolerance)
+
+        T1 += numpy.count_nonzero(comparison1 == True)
+        F1 += numpy.count_nonzero(comparison1 == False)
+        T2 += numpy.count_nonzero(comparison2 == True)
+        F2 += numpy.count_nonzero(comparison2 == False)
+        T3 += numpy.count_nonzero(comparison3 == True)
+        F3 += numpy.count_nonzero(comparison3 == False)
+        T4 += numpy.count_nonzero(comparison4 == True)
+        F4 += numpy.count_nonzero(comparison4 == False)
+        T5 += numpy.count_nonzero(comparison5 == True)
+        F5 += numpy.count_nonzero(comparison5 == False)
+        T6 += numpy.count_nonzero(comparison6 == True)
+        F6 += numpy.count_nonzero(comparison6 == False)
+
+    print 'C1: True: {0:3} False {1:3}'.format(T1, F1)
+    print 'C2: True: {0:3} False {1:3}'.format(T2, F2)
+    print 'C3: True: {0:3} False {1:3}'.format(T3, F3)
+    print 'C4: True: {0:3} False {1:3}'.format(T4, F4)
+    print 'C5: True: {0:3} False {1:3}'.format(T5, F5)
+    print 'C6: True: {0:3} False {1:3}'.format(T6, F6)
