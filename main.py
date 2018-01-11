@@ -5,9 +5,11 @@
 
 import filterbank as fb
 import dft
+import dtw
 
 import math, time
 
+import librosa
 import numpy
 from matplotlib import pyplot as plt
 from scipy.io.wavfile import read
@@ -59,18 +61,33 @@ class FeatureVectorExtract(object):
                 for idx, coeff in enumerate(val['coeffs']):
                     fvals.append(coeff * p[lbin+idx])
 
-                #log_energies[key] = math.log10(sum(fvals))
-                log_energies[key] = sum(fvals)
-            vectors[frame] = dct([ i for i in log_energies.itervalues() ])
-            print len(vectors[frame])
+                log_energies[key] = math.log10(sum(fvals))
+
+                framedct = dct([ i for i in log_energies.itervalues() ])
+
+            vectors[frame] = framedct[0:13]
 
         return vectors
 
 
 if __name__ == '__main__':
     f1 = FeatureVectorExtract('wavs/one-adam-1.wav', 1024, 80, 8000, 0.025, 0.01)
-    mfcc1 = f1.mfcc_vectors
+    mfcc1 = f1.mfcc_vectors[9]
 
-    print type(mfcc1), len(mfcc1)
-    for key, val in mfcc1.iteritems():
-        print key, val
+    fs, data = read('wavs/one-adam-1.wav')
+    data = data[2755:3306]
+
+    mfcc2 = librosa.feature.mfcc(y=data, sr=fs, n_mfcc=13)
+    libmfcc1 = list()
+    for idx, i in enumerate(mfcc2):
+        libmfcc1.append(mfcc2[idx,0])
+
+    fs, data = read('wavs/one-adam-2.wav')
+    data = data[2755:3306]
+
+    mfcc3 = librosa.feature.mfcc(y=data, sr=fs, n_mfcc=13)
+    libmfcc2 = list()
+    for idx, i in enumerate(mfcc3):
+        libmfcc2.append(mfcc3[idx,0])
+
+    print librosa.core.dtw(libmfcc1, libmfcc2)
