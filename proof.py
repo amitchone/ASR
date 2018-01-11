@@ -25,14 +25,14 @@ def get_frames(length, ovrlap, fs, data):
     return frames
 
 
-def get_mfcc_vector(sample, framelength=0.025, frameoverlap=0.0125):
+def get_mfcc_vector(sample, framelength=0.025, frameoverlap=0.0125, n_mfccs=13):
     fs, data = read(sample)
     samplevector = list()
 
     for frame, samples in get_frames(framelength, frameoverlap, fs, data).iteritems():
         samplevector.append(librosa.feature.mfcc(samples, sr=fs, n_mfcc=13))
 
-    return samplevector
+    return numpy.array(samplevector)
 
 
 def get_dtw(template, test):
@@ -47,7 +47,11 @@ def get_dtw(template, test):
 
 if __name__ == '__main__':
     one_1 = get_mfcc_vector('wavs/one-adam-1.wav')
+    print one_1.shape
+
     one_2 = get_mfcc_vector('wavs/one-adam-2.wav')
+    print one_2.shape
+    '''
     one_3 = get_mfcc_vector('wavs/one-adam-3.wav')
 
     one_b = get_mfcc_vector('wavs/one-ben-1.wav')
@@ -55,3 +59,4 @@ if __name__ == '__main__':
     two_1 = get_mfcc_vector('wavs/two-adam-1.wav')
 
     get_dtw(one_1, one_b)
+    '''
