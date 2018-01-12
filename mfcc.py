@@ -80,8 +80,46 @@ def fft_frame(frames, fftres=512):
     return fftd_frames
 
 
+def get_mfcc_filterbank(fs, nfilts=12, lf=300, hf=8000, fftres=512):
+    def hertz_to_mel(f):
+        return round(2595 * math.log10(1+(f/float(700))), 2)
+
+    def mel_to_hertz(q):
+        return round(700 * (10 ** (q/2595) - 1), 2)
+
+    def hz_to_fft_bin(fftres, f, fs):
+        return math.floor((fftres + 1) * f / fs)
+
+    lf = hertz_to_mel(lf)
+    hf = hertz_to_mel(hf)
+    stepsize = (hf - lf) / (nfilts - 1)
+    melpoints = list()
+
+    print 'Filterbank parameters:\n\nnfilts: {0:2}   lf: {1:7}   hf: {2:7}   step: {3:7}'.format(nfilts, lf, hf, stepsize)
+
+    for i in range(0, nfilts):
+        print i
+        melpoints.append(lf + (i * stepsize))
+
+    hzpoints = [ mel_to_hertz(i) for i in melpoints ]
+    bins = [ hz_to_fft_bin(fftres, i, fs) for i in hzpoints ]
+
+    print hzpoints, len(hzpoints)
+    print bins, len(bins)
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     fs, data = open_file('wavs/one-adam-1.wav')
-    framelength, frames = frame_data(data, fs)
-    windowed_frames = window_frame(frames, framelength)
-    fftd_frames = fft_frame(windowed_frames)
+    #framelength, frames = frame_data(data, fs)
+    #windowed_frames = window_frame(frames, framelength)
+    #fftd_frames = fft_frame(windowed_frames)
+    get_mfcc_filterbank(16000)
