@@ -3,7 +3,6 @@
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
-
 import numpy
 from scipy.io.wavfile import read
 
@@ -17,7 +16,7 @@ def open_file(f):
     return fs, data
 
 
-def frame(data, fs, length=0.025, shift=0.010):
+def frame_data(data, fs, length=0.025, shift=0.010):
     '''
     return array of arrays where each array is a framed segment of data (data)
     length of frames is given as sampling frequency (fs) * length (in ms)
@@ -35,14 +34,38 @@ def frame(data, fs, length=0.025, shift=0.010):
 
         frames.append(frame)
 
-    return numpy.array(frames)
+    return length, numpy.array(frames)
 
 
-def window():
-    pass
+def window_frame(frames, length):
+    '''
+    return array of arrays where each array is a frame within frames (frames) with
+    a hamming window function applied
+    length of hamming window is equivalent to the frame lengths (should be uniform)
+    '''
+    window = numpy.hamming(length)
+    windowed_frames = list()
+
+    for frame in frames:
+        windowed_frame = list()
+
+        for idx, sample in enumerate(frame):
+            windowed_frame.append(sample * window[idx])
+
+        windowed_frames.append(windowed_frame)
+
+    return numpy.array(windowed_frames)
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
     fs, data = open_file('wavs/one-adam-1.wav')
-    frames = frame(data, fs)
-    print frames.shape
+    framelength, frames = frame_data(data, fs)
+    window_frame(frames, framelength)
