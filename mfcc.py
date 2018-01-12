@@ -80,59 +80,65 @@ def fft_frame(frames, fftres=512):
     return fftd_frames
 
 
-def get_mfcc_filterbank(fs, nfilts=12, lf=300, hf=8000, fftres=512):
+def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
+    '''
+    return array of arrays containing mel frequency filterbank coefficients and
+    the FFT bin numbers to which they must be applied
+    '''
     def hertz_to_mel(f):
+        '''
+        return mel frequency of given value (f) in hz
+        '''
         return round(2595 * math.log10(1+(f/float(700))), 2)
 
     def mel_to_hertz(q):
+        '''
+        return frequency of given value (q) in mels
+        '''
         return round(700 * (10 ** (q/2595) - 1), 2)
 
     def hz_to_fft_bin(fftres, f, fs):
+        '''
+        return FFT bin value closest to given frequency (f)
+
+        note: FFT bin 256 will always be equivalent to fs * 0.5 in 512 point FFT
+        '''
         return math.floor((fftres + 1) * f / fs)
 
-    def get_coefficients(lbin, pbin, hbin):
-        print lbin, pbin, hbin
-        lcoeff = 0.1
-        pcoeff = 1
-
+    def get_coefficients(lbin, pbin, hbin, lcoeff=0.1, pcoeff=1):
+        '''
+        return two arrays
+        1: triangular filter coefficients to be applied to FFT between lbin and hbin, peak value at pbin
+        2: low bin [0] index value of array, peak bin [1] index value of array and high bin [2] etc...
+        '''
+        fcoeffs = list()
         stepsize = (pcoeff - lcoeff) / (pbin - lbin)
 
-        lcoeff
-        print 0.1 + stepsize
-        print 0.1 + (stepsize * 2)
-        print 0.1 + (stepsize * 3)
-        print 0.1 + (stepsize * 4)
-        print 0.1 + (stepsize * 5)
-        print 0.1 + (stepsize * 6)
-        print pcoeff
+        for i in range(0, pbin - lbin):
+            fcoeffs.append(lcoeff + (stepsize * i))
 
+        fcoeffs.append(pcoeff)
 
+        stepsize = (pcoeff - lcoeff) / (hbin - pbin)
+
+        for i in range(hbin - pbin, 0, -1):
+            fcoeffs.append(lcoeff + ((stepsize * i) - stepsize))
+
+        return numpy.array(fcoeffs), numpy.array([lbin, pbin, hbin])
 
     lf = hertz_to_mel(lf)
     hf = hertz_to_mel(hf)
-    stepsize = (hf - lf) / (nfilts - 1)
+    stepsize = (hf - lf) / (nfilts + 1)
+    filters = list()
 
-    print 'Filterbank parameters:\n\nnfilts: {0:2}   lf: {1:7}   hf: {2:7}   step: {3:7}'.format(nfilts, lf, hf, stepsize)
-
-    melpoints = [ (lf + (i * stepsize)) for i in range(0, nfilts) ]
+    melpoints = [ (lf + (i * stepsize)) for i in range(0, nfilts + 2) ]
     hzpoints = [ mel_to_hertz(i) for i in melpoints ]
     bins = [ int(hz_to_fft_bin(fftres, i, fs)) for i in hzpoints ]
 
-    print hzpoints, len(hzpoints)
-    print bins, len(bins)
-
     for i in range(len(bins) - 2):
-        get_coefficients(bins[i], bins[i + 1], bins[i + 2])
-        break
+        filters.append(get_coefficients(bins[i], bins[i + 1], bins[i + 2]))
 
-
-
-
-
-
-
-
-
+    return numpy.array(filters)
 
 
 if __name__ == '__main__':
@@ -140,4 +146,4 @@ if __name__ == '__main__':
     #framelength, frames = frame_data(data, fs)
     #windowed_frames = window_frame(frames, framelength)
     #fftd_frames = fft_frame(windowed_frames)
-    get_mfcc_filterbank(16000)
+    print get_mfcc_filterbank(fs)
