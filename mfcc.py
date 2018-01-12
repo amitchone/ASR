@@ -3,7 +3,7 @@
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
-import numpy
+import math, numpy
 from scipy.io.wavfile import read
 
 
@@ -57,15 +57,31 @@ def window_frame(frames, length):
     return numpy.array(windowed_frames)
 
 
+def fft_frame(frames, fftres=512):
+    '''
+    return array of arrays where each array is a periodogram power spectral density estimate
+    of each frame within frames (frames)
+    fft resolution is given by fftres
+    '''
+    fftd_frames = list()
 
+    for frame in frames:
+        fftd_frame = list()
 
+        coefficients = numpy.fft.fft(frame, n=fftres)
 
+        for c in coefficients[0:(len(coefficients)/2)]:
+            absolute = math.sqrt((c.real ** 2) + (c.imag ** 2))
+            periodogram = ((1 / float(len(coefficients))) * absolute) ** 2
+            fftd_frame.append(periodogram)
 
+        fftd_frames.append(fftd_frame)
 
-
+    return fftd_frames
 
 
 if __name__ == '__main__':
     fs, data = open_file('wavs/one-adam-1.wav')
     framelength, frames = frame_data(data, fs)
-    window_frame(frames, framelength)
+    windowed_frames = window_frame(frames, framelength)
+    fftd_frames = fft_frame(windowed_frames)
