@@ -90,22 +90,40 @@ def get_mfcc_filterbank(fs, nfilts=12, lf=300, hf=8000, fftres=512):
     def hz_to_fft_bin(fftres, f, fs):
         return math.floor((fftres + 1) * f / fs)
 
+    def get_coefficients(lbin, pbin, hbin):
+        print lbin, pbin, hbin
+        lcoeff = 0.1
+        pcoeff = 1
+
+        stepsize = (pcoeff - lcoeff) / (pbin - lbin)
+
+        lcoeff
+        print 0.1 + stepsize
+        print 0.1 + (stepsize * 2)
+        print 0.1 + (stepsize * 3)
+        print 0.1 + (stepsize * 4)
+        print 0.1 + (stepsize * 5)
+        print 0.1 + (stepsize * 6)
+        print pcoeff
+
+
+
     lf = hertz_to_mel(lf)
     hf = hertz_to_mel(hf)
     stepsize = (hf - lf) / (nfilts - 1)
-    melpoints = list()
 
     print 'Filterbank parameters:\n\nnfilts: {0:2}   lf: {1:7}   hf: {2:7}   step: {3:7}'.format(nfilts, lf, hf, stepsize)
 
-    for i in range(0, nfilts):
-        print i
-        melpoints.append(lf + (i * stepsize))
-
+    melpoints = [ (lf + (i * stepsize)) for i in range(0, nfilts) ]
     hzpoints = [ mel_to_hertz(i) for i in melpoints ]
-    bins = [ hz_to_fft_bin(fftres, i, fs) for i in hzpoints ]
+    bins = [ int(hz_to_fft_bin(fftres, i, fs)) for i in hzpoints ]
 
     print hzpoints, len(hzpoints)
     print bins, len(bins)
+
+    for i in range(len(bins) - 2):
+        get_coefficients(bins[i], bins[i + 1], bins[i + 2])
+        break
 
 
 
