@@ -77,7 +77,7 @@ def fft_frame(frames, fftres=512):
 
         fftd_frames.append(fftd_frame)
 
-    return fftd_frames
+    return numpy.array(fftd_frames)
 
 
 def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
@@ -100,7 +100,6 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
     def hz_to_fft_bin(fftres, f, fs):
         '''
         return FFT bin value closest to given frequency (f)
-
         note: FFT bin 256 will always be equivalent to fs * 0.5 in 512 point FFT
         '''
         return math.floor((fftres + 1) * f / fs)
@@ -143,7 +142,8 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
 
 if __name__ == '__main__':
     fs, data = open_file('wavs/one-adam-1.wav')
-    #framelength, frames = frame_data(data, fs)
-    #windowed_frames = window_frame(frames, framelength)
-    #fftd_frames = fft_frame(windowed_frames)
-    print get_mfcc_filterbank(fs)
+    framelength, frames = frame_data(data, fs)
+    windowed_frames = window_frame(frames, framelength)
+    frame_psde = fft_frame(windowed_frames)
+    filterbank = get_mfcc_filterbank(fs)
+    print frame_psde.shape
