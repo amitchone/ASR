@@ -91,11 +91,13 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
         '''
         return round(2595 * math.log10(1+(f/float(700))), 2)
 
+
     def mel_to_hertz(q):
         '''
         return frequency of given value (q) in mels
         '''
         return round(700 * (10 ** (q/2595) - 1), 2)
+
 
     def hz_to_fft_bin(fftres, f, fs):
         '''
@@ -103,6 +105,7 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
         note: FFT bin 256 will always be equivalent to fs * 0.5 in 512 point FFT
         '''
         return math.floor((fftres + 1) * f / fs)
+
 
     def get_coefficients(lbin, pbin, hbin, lcoeff=0.1, pcoeff=1):
         '''
@@ -140,10 +143,18 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
     return numpy.array(filters)
 
 
+def apply_filters(frames, filterbank):
+    filtered_signal = list()
+
+    for filter in filterbank:
+        print 'low: {0}  peak: {1}  high:{2}'.format(filter[1][0], filter[1][1], filter[1][2])
+
+
+
 if __name__ == '__main__':
     fs, data = open_file('wavs/one-adam-1.wav')
     framelength, frames = frame_data(data, fs)
     windowed_frames = window_frame(frames, framelength)
     frame_psde = fft_frame(windowed_frames)
     filterbank = get_mfcc_filterbank(fs)
-    print frame_psde.shape
+    apply_filters(frame_psde, filterbank)
