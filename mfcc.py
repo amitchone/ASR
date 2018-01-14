@@ -146,7 +146,7 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
 def apply_filters(frames, filterbank):
     '''
     returns array containing len(frames) arrays. each array contains len(filterbank) arrays containing
-    each PSDE frames values with mel-filterbank applied
+    each PSDE frames values with corresponding mel-filter applied
     '''
     filtered_frames = list()
 
@@ -166,6 +166,25 @@ def apply_filters(frames, filterbank):
     return numpy.array(filtered_frames)
 
 
+def sum_log_filterbank_energies(frames):
+    '''
+    returns array of arrays. each array represents a frame from (frames) and
+     contains 26 values each of which are the base 10 log of the sum of the filter coefficients
+    '''
+    log_energies = list()
+
+    for frame in frames:
+        log_energy = list()
+
+        for _filter in frame:
+            log_energy.append(math.log10(sum(_filter)))
+
+        log_energies.append(numpy.array(log_energy))
+
+    return numpy.array(log_energies)
+
+
+
 
 
 if __name__ == '__main__':
@@ -175,4 +194,9 @@ if __name__ == '__main__':
     frame_psde = fft_frame(windowed_frames)
     filterbank = get_mfcc_filterbank(fs)
     filtered_signal = apply_filters(frame_psde, filterbank)
-    
+    log_energies = sum_log_filterbank_energies(filtered_signal)
+
+    print log_energies.shape
+    for energy in log_energies:
+        print energy
+        break
