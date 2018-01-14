@@ -5,6 +5,7 @@
 
 import math, numpy
 from scipy.io.wavfile import read
+from scipy.fftpack import dct
 
 
 def open_file(f):
@@ -184,6 +185,19 @@ def sum_log_filterbank_energies(frames):
     return numpy.array(log_energies)
 
 
+def dct_frame(frames):
+    '''
+    return array of arrays. each array contains 26 DCT coefficients 
+    '''
+    dct_coefficients = list()
+
+    for frame in frames:
+        dct_coefficients.append(numpy.array(dct(frame)))
+
+    return numpy.array(dct_coefficients)
+
+
+
 
 
 
@@ -195,8 +209,7 @@ if __name__ == '__main__':
     filterbank = get_mfcc_filterbank(fs)
     filtered_signal = apply_filters(frame_psde, filterbank)
     log_energies = sum_log_filterbank_energies(filtered_signal)
+    dctd_frames = dct_frame(log_energies)
 
-    print log_energies.shape
-    for energy in log_energies:
-        print energy
-        break
+    for frame in dctd_frames:
+        print frame[0:13]
