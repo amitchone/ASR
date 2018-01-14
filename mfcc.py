@@ -144,10 +144,27 @@ def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
 
 
 def apply_filters(frames, filterbank):
-    filtered_signal = list()
+    '''
+    returns array containing len(frames) arrays. each array contains len(filterbank) arrays containing
+    each PSDE frames values with mel-filterbank applied
+    '''
+    filtered_frames = list()
 
-    for filter in filterbank:
-        print 'low: {0}  peak: {1}  high:{2}'.format(filter[1][0], filter[1][1], filter[1][2])
+    for frame in frames:
+        filtered_frame = list()
+
+        for _filter in filterbank:
+            filtered = list()
+
+            for idx, i in enumerate(range(_filter[1][0], _filter[1][0] + len(_filter[0]))):
+                filtered.append(frame[i -1] * _filter[0][idx])
+
+            filtered_frame.append(numpy.array(filtered))
+
+        filtered_frames.append(numpy.array(filtered_frame))
+
+    return numpy.array(filtered_frames)
+
 
 
 
@@ -157,4 +174,5 @@ if __name__ == '__main__':
     windowed_frames = window_frame(frames, framelength)
     frame_psde = fft_frame(windowed_frames)
     filterbank = get_mfcc_filterbank(fs)
-    apply_filters(frame_psde, filterbank)
+    filtered_signal = apply_filters(frame_psde, filterbank)
+    
