@@ -72,22 +72,6 @@ class FeatureVectorExtract(object):
 
 if __name__ == '__main__':
     f1 = FeatureVectorExtract('wavs/one-adam-1.wav', 1024, 80, 8000, 0.025, 0.01)
-    mfcc1 = f1.mfcc_vectors[9]
+    mfcc = f1.mfcc_vectors
 
-    fs, data = read('wavs/one-adam-1.wav')
-    data = data[2755:3306]
-
-    mfcc2 = librosa.feature.mfcc(y=data, sr=fs, n_mfcc=13)
-    libmfcc1 = list()
-    for idx, i in enumerate(mfcc2):
-        libmfcc1.append(mfcc2[idx,0])
-
-    fs, data = read('wavs/one-adam-2.wav')
-    data = data[2755:3306]
-
-    mfcc3 = librosa.feature.mfcc(y=data, sr=fs, n_mfcc=13)
-    libmfcc2 = list()
-    for idx, i in enumerate(mfcc3):
-        libmfcc2.append(mfcc3[idx,0])
-
-    print librosa.core.dtw(libmfcc1, libmfcc2)
+    print mfcc[0]

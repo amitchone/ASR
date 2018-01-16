@@ -3,7 +3,8 @@
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
-import math, numpy
+import math, numpy, time
+from fastdtw import fastdtw
 from scipy.io.wavfile import read
 from scipy.fftpack import dct
 
@@ -187,29 +188,76 @@ def sum_log_filterbank_energies(frames):
 
 def dct_frame(frames):
     '''
-    return array of arrays. each array contains 26 DCT coefficients 
+    return array of arrays. each array contains DCT coefficients [1:13] (12, excl first)
     '''
     dct_coefficients = list()
 
     for frame in frames:
-        dct_coefficients.append(numpy.array(dct(frame)))
+        dct_coefficients.append(numpy.array(dct(frame))[1:13])
 
     return numpy.array(dct_coefficients)
 
 
+def get_dtw(temp, test, n_mfccs=12):
+    '''
+    XXX: Write comment!
+    '''
+
+    def split_feature_vectors(vectors):
+        '''
+        reshape feature vectors from x * 12 to 12 * x for DTW
+        returns dict containing 12 length x arrays
+        '''
+        time_series_container = dict()
+
+        for i in range(n_mfccs):
+            time_series_container[i] = list()
+
+        for v in vectors:
+            for i in range(n_mfccs):
+                time_series_container[i].append(v[i])
+
+        return time_series_container
+
+
+    a = split_feature_vectors(temp)
+    b = split_feature_vectors(test)
+
+    bc = list()
+    for i in range(n_mfccs):
+        distance, path = fastdtw(a[i], b[i])
+        bc.append(round(distance, 2))
+
+    print bc
+    print '\n\n'
 
 
 
-
-if __name__ == '__main__':
-    fs, data = open_file('wavs/one-adam-1.wav')
+def get_feature_vector(f):
+    '''
+    return array of MFCC feature vectors (also arrays) corresponding to .WAV file (f)
+    '''
+    fs, data = open_file(f)
     framelength, frames = frame_data(data, fs)
     windowed_frames = window_frame(frames, framelength)
     frame_psde = fft_frame(windowed_frames)
     filterbank = get_mfcc_filterbank(fs)
     filtered_signal = apply_filters(frame_psde, filterbank)
     log_energies = sum_log_filterbank_energies(filtered_signal)
-    dctd_frames = dct_frame(log_energies)
 
-    for frame in dctd_frames:
-        print frame[0:13]
+    return dct_frame(log_energies)
+
+
+if __name__ == '__main__':
+    start = time.time()
+    a = get_feature_vector('wavs/one-adam-1.wav')
+    b = get_feature_vector('wavs/one-adam-2.wav')
+    c = get_feature_vector('wavs/one-ben-1.wav')
+    d = get_feature_vector('wavs/two-adam-1.wav')
+
+
+    get_dtw(a, a)
+    get_dtw(a, b)
+    get_dtw(a, c)
+    get_dtw(a, d)
+    print 'Took: {0}s'.format(time.time()-start)
