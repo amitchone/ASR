@@ -1,5 +1,0 @@
-fastdtw==0.3.2
-numpy==1.13.3
-PyAudio==0.2.11
-scipy==1.0.0
-virtualenv==15.1.0
