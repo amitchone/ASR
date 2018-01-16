@@ -3,6 +3,6 @@ echo
 cd ..
 virtualenv venv
 . venv/bin/activate
-pip install -r requirements.txt
+pip install -r install/requirements.txt
 echo
 echo Installation complete!
