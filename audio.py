@@ -1,42 +1,72 @@
-import pyaudio
-import wave
-import sys
+# mfcc.py
+# Compute MFCCs of a given WAV file
+# Author: Adam Mitchell
+# Email:  adamstuartmitchell@gmail.com
 
-import pyaudio
-import wave
+import pyaudio, sys, threading, wave
 
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "output.wav"
 
-p = pyaudio.PyAudio()
+class KeyboardPoller(threading.Thread):
+    def run(self):
+        global key_pressed
 
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+        if sys.stdin.read(1) == 'K': # Enter
+            key_pressed = True
+        else :
+            key_pressed = False
 
-print("* recording")
+        data_ready.set()
 
-frames = []
 
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)
-    frames.append(data)
+class AudioRecord(object):
+    def __init__(self, chunk=1024, _format=pyaudio.paInt16, channels=1, fs=16000):
+        self.chunk = chunk
+        self.format = _format
+        self.channels = channels
+        self.fs = fs
+        self.p = pyaudio.PyAudio()
 
-print("* done recording")
 
-stream.stop_stream()
-stream.close()
-p.terminate()
+    def record(self):
+        self.frames = list()
+        output_file = raw_input('Output file name: ') + '.wav'
+        poller = KeyboardPoller()
+        poller.start()
 
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
+        print '--- Recording ---'
+
+        self.stream = self.p.open(format=self.format,
+                                  channels=self.channels,
+                                  rate=self.fs,
+                                  input=True,
+                                  frames_per_buffer=self.chunk
+                                 )
+
+        while not data_ready.isSet() :
+            data = self.stream.read(self.chunk, exception_on_overflow=False)
+            self.frames.append(data)
+
+        if key_pressed:
+            pass
+
+        print '--- Stopped Recording ---'
+
+        self.stream.stop_stream()
+        self.stream.close()
+        self.p.terminate()
+        self.write_wav(output_file)
+
+
+    def write_wav(self, output_file):
+        wf = wave.open('wavs/{0}'.format(output_file), 'wb')
+        wf.setnchannels(self.channels)
+        wf.setsampwidth(self.p.get_sample_size(self.format))
+        wf.setframerate(self.fs)
+        wf.writeframes(b''.join(self.frames))
+        wf.close()
+
+
+if __name__ == "__main__" :
+    data_ready = threading.Event()
+    a = AudioRecord()
+    a.record()

@@ -21,3 +21,5 @@ A Python implementation of the Mel Frequency Cepstral Coefficient algorithm for 
 2. Pre-emphasis / Lifter
 3. Feature vector database
 4. Audio record / playback (`audio.py`)
+5. Multithread MFCC extraction
+6. Create MFCC extractor as class?
