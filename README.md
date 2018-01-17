@@ -1,6 +1,6 @@
 # MFCC Automatic Speech Recognition Algorithm Implementation
 
-A Python implementation of the Mel Frequency Cepstral Coefficient algorithm for the detection of phonemes in continuous speech.
+A Python 2.7 implementation of Mel Frequency Cepstral Coefficients (MFCC) and Dynamic Time Warping (DTW) algorithms for Automated Speech Recognition (ASR). 
 
 ## Method
 
