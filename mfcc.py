@@ -228,7 +228,9 @@ def get_dtw(temp, test, n_mfccs=12):
         distance, path = fastdtw(a[i], b[i])
         bc.append(round(distance, 2))
 
+    print path
     print bc
+    print len(bc)
     print '\n\n'
 
 
