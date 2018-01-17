@@ -250,10 +250,10 @@ def get_feature_vector(f):
 
 if __name__ == '__main__':
     start = time.time()
-    a = get_feature_vector('wavs/one-adam-1.wav')
-    b = get_feature_vector('wavs/one-adam-2.wav')
-    c = get_feature_vector('wavs/one-ben-1.wav')
-    d = get_feature_vector('wavs/two-adam-1.wav')
+    a = get_feature_vector('wavs/dev/one-adam-1.wav')
+    b = get_feature_vector('wavs/dev/one-adam-2.wav')
+    c = get_feature_vector('wavs/dev/one-ben-1.wav')
+    d = get_feature_vector('wavs/dev/two-adam-1.wav')
 
 
     get_dtw(a, a)
