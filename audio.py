@@ -1,5 +1,5 @@
-# mfcc.py
-# Compute MFCCs of a given WAV file
+# audio.py
+# Record .WAV file at 16kHz/16-bit 
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
