@@ -20,6 +20,21 @@
 import MySQLdb as mysql
 
 
+class DbHandler(object):
+    def __init__(self, pw, user='root', host='localhost', db='mfcc_training_data'):
+        self.cnxn = mysql.connect(host=host, user=user, passwd=pw, db=db)
+        self.curs = self.cnxn.cursor()
+
+        self.curs.execute('SHOW columns FROM mfcc_training_data;')
+
+        for col in self.curs.fetchall():
+            print col
+
+
+pw = raw_input('Password: ')
+db = DbHandler(pw)
+
+'''
 passwd = raw_input('Database password: ')
 database = 'mfcc_training_data'
 
@@ -29,3 +44,4 @@ cu = db.cursor()
 cu.execute('SHOW columns FROM mfcc_training_data;')
 for col in cu.fetchall():
     print col
+'''
