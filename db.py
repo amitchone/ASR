@@ -17,6 +17,7 @@
 # | time_added           | datetime    | YES  |     | NULL    |       |
 # +----------------------+-------------+------+-----+---------+-------+
 
+import time
 import MySQLdb as mysql
 
 
@@ -29,6 +30,22 @@ class DbHandler(object):
 
         for col in self.curs.fetchall():
             print col
+
+        filename = "eleven-11-0-m.wav"
+        filepath = "wavs/training"
+        num_value = "11"
+        word_value = "eleven"
+        vector = "[ [1,1,1], [2,2,2], [3,3,3], [4,4,4], [5,5,5] ]"
+        time_added = time.time()
+
+        query = """INSERT INTO mfcc_training_data(filename,filepath,num_value,""" \
+                """word_value,vector) VALUES ({0},{1},{2},{3},{4});""".format(filename, filepath, num_value, word_value, vector)
+
+        print query
+        self.curs.execute(query)
+
+
+        self.cnxn.close()
 
 
 pw = raw_input('Password: ')

@@ -1,5 +1,6 @@
 echo Installing required packages for MFCC/DTW feature extraction...
 echo
+pip install virtualenv
 cd ..
 virtualenv venv
 . venv/bin/activate
