@@ -1,5 +1,5 @@
 # audio.py
-# Record .WAV file at 16kHz/16-bit 
+# Record .WAV file at 16kHz/16-bit
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
@@ -58,7 +58,7 @@ class AudioRecord(object):
 
 
     def write_wav(self, output_file):
-        wf = wave.open('wavs/{0}'.format(output_file), 'wb')
+        wf = wave.open('wavs/training/{0}'.format(output_file), 'wb')
         wf.setnchannels(self.channels)
         wf.setsampwidth(self.p.get_sample_size(self.format))
         wf.setframerate(self.fs)
