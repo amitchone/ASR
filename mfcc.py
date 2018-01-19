@@ -242,18 +242,3 @@ def get_feature_vector(f):
     log_energies = sum_log_filterbank_energies(filtered_signal)
 
     return dct_frame(log_energies)
-
-
-if __name__ == '__main__':
-    start = time.time()
-    a = get_feature_vector('wavs/dev/one-adam-1.wav')
-    b = get_feature_vector('wavs/dev/one-adam-2.wav')
-    c = get_feature_vector('wavs/dev/one-ben-1.wav')
-    d = get_feature_vector('wavs/dev/two-adam-1.wav')
-
-
-    get_dtw(a, a)
-    get_dtw(a, b)
-    get_dtw(a, c)
-    get_dtw(a, d)
-    print 'Took: {0}s'.format(time.time()-start)

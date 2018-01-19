@@ -40,6 +40,7 @@ CREATE TABLE `mfcc_training_data` (
 
 LOCK TABLES `mfcc_training_data` WRITE;
 /*!40000 ALTER TABLE `mfcc_training_data` DISABLE KEYS */;
+INSERT INTO `mfcc_training_data` VALUES (0,'a','b','c','d','e',NULL);
 /*!40000 ALTER TABLE `mfcc_training_data` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-17 17:31:44
+-- Dump completed on 2018-01-18 20:15:21

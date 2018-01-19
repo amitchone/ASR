@@ -3,7 +3,6 @@
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 #
-#
 # mysql> SHOW columns FROM mfcc_training_data;
 # +----------------------+-------------+------+-----+---------+-------+
 # | Field                | Type        | Null | Key | Default | Extra |
@@ -17,7 +16,7 @@
 # | sex                  | text(2)     | YES  |     | NULL    |       |
 # +----------------------+-------------+------+-----+---------+-------+
 
-import numpy, os
+import traceback
 import MySQLdb as mysql
 
 
@@ -29,17 +28,20 @@ class DbHandler(object):
     def construct_write_query(self, table, id, filename, filepath, num_value, word_value, vector, sex):
         self.query = """INSERT INTO {0}(id,filename,filepath,""" \
                      """num_value,word_value,vector,sex) VALUES""" \
-                     """("{0}","{1}","{2}","{3}","{4}","{5}","{6}")""".format(table, id,
+                     """("{1}","{2}","{3}","{4}","{5}","{6}","{7}")""".format(table, id,
                                                                               filename, filepath,
                                                                               num_value, word_value,
                                                                               vector, sex
                                                                              )
+
+        return self.query
 
     def execute_query(self, query):
         try:
             self.curs.execute(query)
             self.cnxn.commit()
         except:
+            print traceback.format_exc()
             self.cnxn.rollback()
 
     def destroy_cnxn(self):
