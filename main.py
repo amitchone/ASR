@@ -3,12 +3,12 @@
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
-import os, traceback
+import getpass, os, traceback
 import mfcc, db
 
 
 def write_training_data_to_db():
-    sql = db.DbHandler(raw_input('DB PW: '))
+    sql = db.DbHandler(getpass.getpass())
 
     for idx, f in enumerate(os.listdir('{0}/wavs/training'.format(os.getcwd()))):
         print idx, f
