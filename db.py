@@ -25,20 +25,23 @@ class DbHandler(object):
         self.cnxn = mysql.connect(host=host, user=user, passwd=pw, db=db)
         self.curs = self.cnxn.cursor()
 
-    def construct_write_query(self, table, id, filename, filepath, num_value, word_value, vector, sex, vector_shape):
+    def construct_write_query(self, table, id, filename, filepath, num_value, word_value, sex, vector_shape):
         self.query = """INSERT INTO {0}(id,filename,filepath,""" \
                      """num_value,word_value,vector,sex,vector_shape) VALUES""" \
-                     """("{1}","{2}","{3}","{4}","{5}","{6}","{7}", "{8}")""".format(table, id,
+                     """("{1}","{2}","{3}","{4}","{5}","{8}","{6}", "{7}");""".format(table, id,
                                                                               filename, filepath,
                                                                               num_value, word_value,
-                                                                              vector, sex, vector_shape
+                                                                              sex, vector_shape,'%s'
                                                                              )
 
         return self.query
 
-    def execute_query(self, query):
+    def execute_query(self, query, *args):
         try:
-            self.curs.execute(query)
+            if len(args) > 0:
+                self.curs.execute(query, (mysql.escape_string(args[0]), ))
+            else:
+                self.curs.execute(query)
             self.cnxn.commit()
         except:
             print traceback.format_exc()
