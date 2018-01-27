@@ -23,14 +23,14 @@ DROP TABLE IF EXISTS `mfcc_training_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mfcc_training_data` (
-  `idmfcc_training_data` int(11) NOT NULL,
+  `id` int(5) NOT NULL,
   `filename` mediumtext,
-  `filepath` text,
-  `num_value` varchar(45) DEFAULT NULL,
-  `word_value` varchar(45) DEFAULT NULL,
-  `vector` longtext,
-  `time_added` datetime DEFAULT NULL,
-  PRIMARY KEY (`idmfcc_training_data`)
+  `filepath` mediumtext,
+  `num_value` int(2) DEFAULT NULL,
+  `word_value` tinytext,
+  `vector` blob,
+  `sex` tinytext,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -40,7 +40,6 @@ CREATE TABLE `mfcc_training_data` (
 
 LOCK TABLES `mfcc_training_data` WRITE;
 /*!40000 ALTER TABLE `mfcc_training_data` DISABLE KEYS */;
-INSERT INTO `mfcc_training_data` VALUES (0,'a','b','c','d','e',NULL);
 /*!40000 ALTER TABLE `mfcc_training_data` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-18 20:15:21
+-- Dump completed on 2018-01-27  0:02:46
