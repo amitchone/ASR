@@ -21,7 +21,9 @@ def write_training_data_to_db():
             num_value = info[1]
             word_value = info[0]
             vector = mfcc.get_feature_vector('wavs/training/{0}'.format(filename))
+            vector_blob = numpy.getbuffer(mfcc.get_feature_vector('wavs/training/{0}'.format(filename)), dtype=np.float32)
             sex = info[-1][0]
+            vector_shape = vector.shape
 
             query = sql.construct_write_query('mfcc_training_data',
                                               int(idx),
@@ -29,8 +31,9 @@ def write_training_data_to_db():
                                               str(filepath),
                                               int(num_value),
                                               str(word_value),
-                                              str(vector),
-                                              str(sex)
+                                              str(vector_blob),
+                                              str(sex),
+                                              str(vector_shape)
                                              )
 
             sql.execute_query(query)

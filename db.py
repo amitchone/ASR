@@ -25,13 +25,13 @@ class DbHandler(object):
         self.cnxn = mysql.connect(host=host, user=user, passwd=pw, db=db)
         self.curs = self.cnxn.cursor()
 
-    def construct_write_query(self, table, id, filename, filepath, num_value, word_value, vector, sex):
+    def construct_write_query(self, table, id, filename, filepath, num_value, word_value, vector, sex, vector_shape):
         self.query = """INSERT INTO {0}(id,filename,filepath,""" \
-                     """num_value,word_value,vector,sex) VALUES""" \
-                     """("{1}","{2}","{3}","{4}","{5}","{6}","{7}")""".format(table, id,
+                     """num_value,word_value,vector,sex,vector_shape) VALUES""" \
+                     """("{1}","{2}","{3}","{4}","{5}","{6}","{7}", "{8}")""".format(table, id,
                                                                               filename, filepath,
                                                                               num_value, word_value,
-                                                                              vector, sex
+                                                                              vector, sex, vector_shape
                                                                              )
 
         return self.query
