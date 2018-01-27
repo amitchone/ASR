@@ -30,6 +30,7 @@ CREATE TABLE `mfcc_training_data` (
   `word_value` tinytext,
   `vector` blob,
   `sex` tinytext,
+  `vector_shape` tinytext,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -52,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-27  0:02:46
+-- Dump completed on 2018-01-27  0:13:34
