@@ -39,13 +39,15 @@ class DbHandler(object):
     def execute_query(self, query, *args):
         try:
             if len(args) > 0:
-                self.curs.execute(query, (mysql.escape_string(args[0]), ))
+                self.curs.execute(query, (args[0], ))
             else:
                 self.curs.execute(query)
             self.cnxn.commit()
         except:
             print traceback.format_exc()
             self.cnxn.rollback()
+        finally:
+            return self.curs.fetchall()
 
     def destroy_cnxn(self):
         self.cnxn.close()
