@@ -4,7 +4,7 @@
 # Email:  adamstuartmitchell@gmail.com
 
 import MySQLdb as mysql
-import getpass, numpy, os, sys, traceback
+import getpass, numpy, os, sys, traceback, time
 import mfcc, db
 
 
@@ -45,23 +45,25 @@ def write_training_data_to_db():
     sql.destroy_cnxn()
 
 
-def read_vector():
+def read_vectors():
     sql = db.DbHandler(getpass.getpass())
 
-    v = mfcc.get_feature_vector('wavs/training/in_db/zero-0-0-m.wav')
-    print v.shape
+    vectors = sql.execute_query("""SELECT vector, vector_shape FROM mfcc_training_data;""")
 
-    for b in sql.execute_query("""SELECT vector, vector_shape FROM mfcc_training_data WHERE filename LIKE 'zero-0-0-m.wav'"""):
-        shape = b[1]
+    for vector in vectors:
+        shape = vector[1]
+
         for char in [ '(', ')' ]:
             shape = shape.replace(char, '')
+
         shape = shape.split(',')
-        d = numpy.fromstring(b[0][1:-1], dtype=numpy.float64).reshape(int(shape[0]), int(shape[1]))
 
-        print d.shape
+        yield numpy.fromstring(vector[0][1:-1], dtype=numpy.float64).reshape(int(shape[0]), int(shape[1]))
 
+    sql.destroy_cnxn()
 
 
 if __name__ == '__main__':
     #write_training_data_to_db()
-    read_vector()
+    for v in read_vectors():
+        print v.shape
