@@ -3,7 +3,6 @@
 # Author: Adam Mitchell
 # Email:  adamstuartmitchell@gmail.com
 
-import MySQLdb as mysql
 import getpass, numpy, os, sys, traceback, time
 import mfcc, db
 
@@ -48,22 +47,36 @@ def write_training_data_to_db():
 def read_vectors():
     sql = db.DbHandler(getpass.getpass())
 
-    vectors = sql.execute_query("""SELECT vector, vector_shape FROM mfcc_training_data;""")
+    global start
+    start = time.time()
+
+    vectors = sql.execute_query("""SELECT vector, vector_shape, num_value FROM mfcc_training_data;""")
 
     for vector in vectors:
         shape = vector[1]
+        num_value = vector[2]
 
         for char in [ '(', ')' ]:
             shape = shape.replace(char, '')
 
         shape = shape.split(',')
 
-        yield numpy.fromstring(vector[0][1:-1], dtype=numpy.float64).reshape(int(shape[0]), int(shape[1]))
+        yield numpy.fromstring(vector[0][1:-1], dtype=numpy.float64).reshape(int(shape[0]), int(shape[1])), num_value
 
     sql.destroy_cnxn()
 
 
 if __name__ == '__main__':
     #write_training_data_to_db()
-    for v in read_vectors():
-        print v.shape
+
+    train = mfcc.get_feature_vector('wavs/training/zero-test.wav')
+
+    results = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []}
+
+    for template in read_vectors():
+        results[int(template[1])].append(round(sum(mfcc.get_dtw(template[0], train)) / 12, 2))
+
+    for key, val in results.iteritems():
+        print key, sum(val) / 12
+
+    print time.time() - start

@@ -228,6 +228,8 @@ def get_dtw(temp, test, n_mfccs=12):
         distance, path = fastdtw(a[i], b[i])
         bc.append(round(distance, 2))
 
+    return bc
+
 
 def get_feature_vector(f):
     '''
