@@ -4,17 +4,18 @@
 # Email:  adamstuartmitchell@gmail.com
 #
 # mysql> SHOW columns FROM mfcc_training_data;
-# +----------------------+-------------+------+-----+---------+-------+
-# | Field                | Type        | Null | Key | Default | Extra |
-# +----------------------+-------------+------+-----+---------+-------+
-# | idmfcc_training_data | int(5)      | NO   | PRI | NULL    |       |
-# | filename             | mediumtext  | YES  |     | NULL    |       |
-# | filepath             | mediumtext  | YES  |     | NULL    |       |
-# | num_value            | varchar(45) | YES  |     | NULL    |       |
-# | word_value           | varchar(45) | YES  |     | NULL    |       |
-# | vector               | longtext    | YES  |     | NULL    |       |
-# | sex                  | text(2)     | YES  |     | NULL    |       |
-# +----------------------+-------------+------+-----+---------+-------+
+# +--------------+------------+------+-----+---------+-------+
+# | Field        | Type       | Null | Key | Default | Extra |
+# +--------------+------------+------+-----+---------+-------+
+# | id           | int(5)     | NO   | PRI | NULL    |       |
+# | filename     | mediumtext | YES  |     | NULL    |       |
+# | filepath     | mediumtext | YES  |     | NULL    |       |
+# | num_value    | int(2)     | YES  |     | NULL    |       |
+# | word_value   | tinytext   | YES  |     | NULL    |       |
+# | vector       | blob       | YES  |     | NULL    |       |
+# | sex          | tinytext   | YES  |     | NULL    |       |
+# | vector_shape | tinytext   | YES  |     | NULL    |       |
+# +--------------+------------+------+-----+---------+-------+
 
 import traceback
 import MySQLdb as mysql
