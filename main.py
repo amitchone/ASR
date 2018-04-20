@@ -21,7 +21,7 @@ class FeatureCompare(object):
             try:
                 info = f.split('-')
 
-                if f != '.DS_Store' and f!= 'in_db':
+                if f != '.DS_Store' and f!= 'in_db_sd_high_spl' and f!= 'in_db_sd_low_spl':
                     filename = f
                     filepath = '{0}/wavs/training'.format(os.getcwd())
                     num_value = info[1]
@@ -31,7 +31,7 @@ class FeatureCompare(object):
                     sex = info[-1][0]
                     vector_shape = vector.shape
 
-                    query = self.sql.construct_write_query('mfcc_training_data',
+                    query = self.sql.construct_write_query('sd_high_spl',
                                                            int(idx),
                                                            str(filename),
                                                            str(filepath),
@@ -50,9 +50,9 @@ class FeatureCompare(object):
 
 
     def read_vectors(self):
-        self.connect_db()
+        #self.connect_db()
 
-        for vector in self.sql.execute_query("""SELECT vector, vector_shape, num_value FROM mfcc_training_data;"""):
+        for vector in self.sql.execute_query("""SELECT vector, vector_shape, num_value FROM sd_high_spl;"""):
             shape = vector[1]
             num_value = vector[2]
 
@@ -63,7 +63,7 @@ class FeatureCompare(object):
 
             yield numpy.fromstring(vector[0][1:-1], dtype=numpy.float64).reshape(int(shape[0]), int(shape[1])), num_value
 
-        self.disconnect_db()
+        #self.disconnect_db()
 
     def get_comparison(self, f):
         train = mfcc.get_feature_vector(f)
@@ -73,10 +73,10 @@ class FeatureCompare(object):
         for template in self.read_vectors():
             results[int(template[1])].append(round(sum(mfcc.get_dtw(template[0], train)) / 12, 2))
 
+        numbers = [ (sum(i) / len(i)) for i in results.itervalues() ] # mean average
+
         for key, val in results.iteritems():
             print key, sum(val) / len(val)
-
-        numbers = [ (sum(i) / len(i)) for i in results.itervalues() ] # mean average
 
         for idx, i in enumerate(numbers):
             if min(numbers) == i:
@@ -85,7 +85,7 @@ class FeatureCompare(object):
 
     def connect_db(self):
         if not 'sql' in self.__dict__:
-            self.sql = db.DbHandler(getpass.getpass())
+            self.sql = db.DbHandler('focusRITE339')
 
 
     def disconnect_db(self):
@@ -94,5 +94,37 @@ class FeatureCompare(object):
 
 
 if __name__ == '__main__':
+    #start = time.time()
     fc = FeatureCompare()
-    print fc.get_comparison('wavs/training/think-eng-test.wav')
+    #fc.write_training_data_to_db()
+
+    fc.connect_db()
+    '''
+    res = fc.get_comparison('wavs/training/5hspl.wav')
+    print 'You said: {0}'.format(res)
+    '''
+    tally = list()
+    for i in range(0, 50):
+        #start = time.time()
+        res = fc.get_comparison('wavs/training/{0}.wav'.format(i))
+        if i < 10:
+            if res == i:
+                print '{0}: Correct!'.format(i)
+                tally.append(i)
+            else:
+                print '{0}: Incorrect!'.format(i)
+        else:
+            if str(i)[1] == str(res):
+                print '{0}: Correct!'.format(i)
+                tally.append(i)
+            else:
+                print '{0}: Incorrect!'.format(i)
+        #print time.time() - start
+
+
+    print '{0}/50 Correct'.format(len(tally))
+
+    #print 'Took: {0}s'.format(time.time() - start)
+
+    fc.disconnect_db()
+    #print 'Took: {0}s'.format(time.time() - start)

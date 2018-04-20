@@ -82,7 +82,7 @@ def fft_frame(frames, fftres=512):
     return numpy.array(fftd_frames)
 
 
-def get_mfcc_filterbank(fs, nfilts=26, lf=300, hf=8000, fftres=512):
+def get_mfcc_filterbank(fs, nfilts=26, lf=185, hf=11025, fftres=512):
     '''
     return array of arrays containing mel frequency filterbank coefficients and
     the FFT bin numbers to which they must be applied

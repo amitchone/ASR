@@ -19,7 +19,7 @@ class KeyboardPoller(threading.Thread):
 
 
 class AudioRecord(object):
-    def __init__(self, chunk=1024, _format=pyaudio.paInt16, channels=1, fs=16000):
+    def __init__(self, chunk=1024, _format=pyaudio.paInt16, channels=1, fs=22050):
         self.chunk = chunk
         self.format = _format
         self.channels = channels
