@@ -21,7 +21,7 @@ class FeatureCompare(object):
             try:
                 info = f.split('-')
 
-                if f != '.DS_Store' and f!= 'in_db_sd_high_spl' and f!= 'in_db_sd_low_spl':
+                if f != '.DS_Store' and f!= 'in_db_sd_high_spl' and f!= 'in_db_sd_low_spl' and f!= 'in_db_si_low_spl' and f!= 'in_db_si_high_spl':
                     filename = f
                     filepath = '{0}/wavs/training'.format(os.getcwd())
                     num_value = info[1]
@@ -31,7 +31,7 @@ class FeatureCompare(object):
                     sex = info[-1][0]
                     vector_shape = vector.shape
 
-                    query = self.sql.construct_write_query('sd_high_spl',
+                    query = self.sql.construct_write_query('si_low_spl',
                                                            int(idx),
                                                            str(filename),
                                                            str(filepath),
@@ -52,7 +52,7 @@ class FeatureCompare(object):
     def read_vectors(self):
         #self.connect_db()
 
-        for vector in self.sql.execute_query("""SELECT vector, vector_shape, num_value FROM sd_high_spl;"""):
+        for vector in self.sql.execute_query("""SELECT vector, vector_shape, num_value FROM sd_low_spl;"""):
             shape = vector[1]
             num_value = vector[2]
 
@@ -80,12 +80,13 @@ class FeatureCompare(object):
 
         for idx, i in enumerate(numbers):
             if min(numbers) == i:
-                return idx
+                #numbers.remove(min(numbers))
+                return idx, min(numbers)
 
 
     def connect_db(self):
         if not 'sql' in self.__dict__:
-            self.sql = db.DbHandler('focusRITE339')
+            self.sql = db.DbHandler(getpass.getpass())
 
 
     def disconnect_db(self):
@@ -99,17 +100,18 @@ if __name__ == '__main__':
     #fc.write_training_data_to_db()
 
     fc.connect_db()
-    '''
-    res = fc.get_comparison('wavs/training/5hspl.wav')
-    print 'You said: {0}'.format(res)
-    '''
+
+    #res = fc.get_comparison('wavs/training/5hspl.wav')
+    #print 'You said: {0}'.format(res)
+
     tally = list()
-    for i in range(0, 50):
+    for i in range(0, 10):
         #start = time.time()
-        res = fc.get_comparison('wavs/training/{0}.wav'.format(i))
+        res, dis = fc.get_comparison('wavs/training/in_db_sd_low_spl/testing/{0}.wav'.format(i))
         if i < 10:
             if res == i:
                 print '{0}: Correct!'.format(i)
+
                 tally.append(i)
             else:
                 print '{0}: Incorrect!'.format(i)
